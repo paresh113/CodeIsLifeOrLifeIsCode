@@ -1,61 +1,82 @@
 #include <iostream>
+
 using namespace std;
-void merge(int *a, int low, int high, int mid)
+
+/* Function to merge the subarrays of a[] */
+void merge(int a[], int beg, int mid, int end)
 {
-    int i, j, k, c[50];
-    i = low;
-    k = low;
-    j = mid + 1;
-    while (i <= mid && j <= high)
+    int i, j, k;
+    int n1 = mid - beg + 1;
+    int n2 = end - mid;
+
+    int LeftArray[n1], RightArray[n2]; //temporary arrays
+
+    /* copy data to temp arrays */
+    for (int i = 0; i < n1; i++)
+    LeftArray[i] = a[beg + i];
+    for (int j = 0; j < n2; j++)
+    RightArray[j] = a[mid + 1 + j];
+
+    i = 0; /* initial index of first sub-array */
+    j = 0; /* initial index of second sub-array */
+    k = beg;  /* initial index of merged sub-array */
+
+    while (i < n1 && j < n2)
     {
-      if (a[i] < a[j]){
-           c[k] = a[i];
-           k++;
-           i++;
-        }
-      else
+        if(LeftArray[i] <= RightArray[j])
         {
-         c[k] = a[j];
-         k++;
-         j++;
+            a[k] = LeftArray[i];
+            i++;
         }
+        else
+        {
+            a[k] = RightArray[j];
+            j++;
+        }
+        k++;
     }
-    while (i <= mid)
-     {
-      c[k] = a[i];
-      k++;
-      i++;
-     }
-    while (j <= high)
+    while (i<n1)
     {
-      c[k] = a[j];
-      k++;
-      j++;
+        a[k] = LeftArray[i];
+        i++;
+        k++;
     }
-    for (i = low; i < k; i++)
-      a[i] = c[i];
-}
-void mergesort(int *a, int low, int high)
-{
-    int mid;
-    if (low < high){
-        mid=(low+high)/2;
-        mergesort(a,low,mid);
-        mergesort(a,mid+1,high);
-        merge(a,low,high,mid);
+
+    while (j<n2)
+    {
+        a[k] = RightArray[j];
+        j++;
+        k++;
     }
-    return;
 }
-int main()
+
+void mergeSort(int a[], int beg, int end)
 {
-    int  i,a[100],b[100];
-    cout<<"enter 5 the elements"<<endl;
-    for (i = 0; i < 5; i++)
-        cin>>a[i];
-    mergesort(a, 0, 4);
-    cout<<"sorted array"<<endl;
-    for (i = 0; i < 5; i++)
+    if (beg < end)
+    {
+        int mid = (beg + end) / 2;
+        mergeSort(a, beg, mid);
+        mergeSort(a, mid + 1, end);
+        merge(a, beg, mid, end);
+    }
+}
+
+/* Function to print the array */
+void printArray(int a[], int n)
+{
+    int i;
+    for (i = 0; i < n; i++)
         cout<<a[i]<<" ";
 }
 
-
+int main()
+{
+    int a[] = { 110, 30, 1, 7, 31, 16, 39, 421 };
+    int n = sizeof(a) / sizeof(a[0]);
+    cout<<"Before sorting array elements are - \n";
+    printArray(a, n);
+    mergeSort(a, 0, n - 1);
+    cout<<"\nAfter sorting array elements are - \n";
+    printArray(a, n);
+    return 0;
+}
